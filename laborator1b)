@@ -1,0 +1,192 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+using namespace std;
+
+struct Vector {
+long* data;
+int size;
+};
+
+void init(Vector& vec, const string& fileName) {
+ifstream file(fileName);
+if (!file) {
+cerr << "Nu am putut deschide fisierul " << fileName << endl;
+exit(1);
+}
+
+file >> vec.size;
+vec.data = new long[vec.size];
+
+for (int i = 0; i < vec.size; ++i) {
+file >> vec.data[i];
+}
+
+file.close();
+}
+
+void clear(Vector& vec) {
+if (vec.data) {
+delete[] vec.data;
+vec.data = nullptr;
+}
+vec.size = 0;
+}
+
+void resize(Vector& vec, int newSize) {
+if (vec.size == newSize) {
+return;
+}
+
+long* newData = new long[newSize];
+int minSize = (newSize < vec.size) ? newSize : vec.size;
+
+for (int i = 0; i < minSize; ++i) {
+newData[i] = vec.data[i];
+}
+
+delete[] vec.data;
+vec.data = newData;
+vec.size = newSize;
+}
+
+long& at(Vector& vec, int index) {
+if (index >= 0 && index < vec.size) {
+return vec.data[index];
+} else {
+cerr << "Index invalid!" << endl;
+exit(1);
+}
+}
+
+void afiseazaVector(const Vector& vec) {
+cout << "Dimensiune: " << vec.size << endl;
+cout << "Elemente: ";
+for (int i = 0; i < vec.size; ++i) {
+cout << vec.data[i] << " ";
+}
+cout << endl;
+}
+
+void afiseazaVector1(const Vector& vec) {
+cout << "Vectorul 1:" << endl;
+afiseazaVector(vec);
+}
+
+void afiseazaVector2(const Vector& vec) {
+cout << "Vectorul 2:" << endl;
+afiseazaVector(vec);
+}
+
+long sumaElementelorNegative(const Vector& vec) {
+long suma = 0;
+for (int i = 0; i < vec.size; ++i) {
+if (vec.data[i] < 0) {
+suma += vec.data[i];
+}
+}
+return suma;
+}
+
+int main() {
+Vector vector1;
+Vector vector2;
+
+init(vector1, "lab1.txt");
+init(vector2, "lab2.txt");
+
+int optiune;
+long sumaNegativa1 = 0;
+long sumaNegativa2 = 0;
+
+do {
+cout << "Meniu:" << endl;
+cout << "1. Adunare vectori" << endl;
+cout << "2. Modificare dimensiune vector 1" << endl;
+cout << "3. Accesare element vector 1" << endl;
+cout << "4. Calcul suma elementelor negative vector 1" << endl;
+cout << "5. Modificare dimensiune vector 2" << endl;
+cout << "6. Accesare element vector 2" << endl;
+cout << "7. Calcul suma elementelor negative vector 2" << endl;
+cout << "8. Eliminare vectori" << endl;
+cout << "9. Afisare vector 1" << endl;
+cout << "10. Afisare vector 2" << endl;
+cout << "0. Ieșire" << endl;
+cout << "Alegeți o opțiune: ";
+cin >> optiune;
+
+switch (optiune) {
+case 1:
+if (vector1.size == vector2.size) {
+Vector vectorSuma;
+vectorSuma.size = vector1.size;
+vectorSuma.data = new long[vectorSuma.size];
+
+for (int i = 0; i < vectorSuma.size; ++i) {
+vectorSuma.data[i] = vector1.data[i] + vector2.data[i];
+}
+
+cout << "Suma vectorilor:" << endl;
+for (int i = 0; i < vectorSuma.size; ++i) {
+cout << vectorSuma.data[i] << " ";
+}
+cout << endl;
+
+delete[] vectorSuma.data;
+} else {
+cerr << "Vectorii au dimensiuni diferite. Nu se poate efectua adunarea." << endl;
+}
+break;
+case 2:
+int newSize1;
+cout << "Introduceti noua dimensiune a vectorului 1: ";
+cin >> newSize1;
+resize(vector1, newSize1);
+break;
+case 3:
+int index1;
+cout << "Introduceti indexul elementului dorit din vectorul 1: ";
+cin >> index1;
+cout << "Elementul de la indexul " << index1 << " din vectorul 1 este: " << at(vector1, index1) << endl;
+break;
+case 4:
+sumaNegativa1 = sumaElementelorNegative(vector1);
+cout << "Suma elementelor negative din vector 1 este: " << sumaNegativa1 << endl;
+break;
+case 5:
+int newSize2;
+cout << "Introduceti noua dimensiune a vectorului 2: ";
+cin >> newSize2;
+resize(vector2, newSize2);
+break;
+case 6:
+int index2;
+cout << "Introduceti indexul elementului dorit din vectorul 2: ";
+cin >> index2;
+cout << "Elementul de la indexul " << index2 << " din vectorul 2 este: " << at(vector2, index2) << endl;
+break;
+case 7:
+sumaNegativa2 = sumaElementelorNegative(vector2);
+cout << "Suma elementelor negative din vector 2 este: " << sumaNegativa2 << endl;
+break;
+case 8:
+clear(vector1);
+clear(vector2);
+break;
+case 9:
+afiseazaVector1(vector1);
+break;
+case 10:
+afiseazaVector2(vector2);
+break;
+case 0:
+cout << "La revedere!" << endl;
+break;
+default:
+cout << "Opțiune invalidă!" << endl;
+break;
+}
+} while (optiune != 0);
+
+return 0;
+}
