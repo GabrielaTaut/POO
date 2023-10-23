@@ -1,0 +1,134 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+using namespace std;
+
+struct Colaborator {
+string nume;
+string specialitate;
+string categorie;
+float salariu;
+};
+
+vector<Colaborator> citesteColaboratori() {
+vector<Colaborator> colaboratori;
+ifstream fisier("lab1.txt");
+
+if (!fisier) {
+cerr << "Eroare la deschiderea fișierului." << endl;
+return colaboratori;
+}
+
+string linie;
+while (getline(fisier, linie)) {
+Colaborator c;
+stringstream ss(linie);
+getline(ss, c.nume, ',');
+getline(ss, c.specialitate, ',');
+getline(ss, c.categorie, ',');
+ss >> c.salariu;
+colaboratori.push_back(c);
+}
+
+fisier.close();
+return colaboratori;
+}
+
+void modificaColaborator(vector<Colaborator>& colaboratori, const string& nume) {
+for (Colaborator& c : colaboratori) {
+if (c.nume == nume) {
+cout << "Introduceti noile date pentru " << nume << ":" << endl;
+cout << "Nume: ";
+cin >> c.nume;
+cout << "Specialitate: ";
+cin >> c.specialitate;
+cout << "Categorie: ";
+cin >> c.categorie;
+cout << "Salariu: ";
+cin >> c.salariu;
+return;
+}
+}
+
+cout << "Colaboratorul cu numele " << nume << " nu a fost gasit." << endl;
+}
+
+bool comparaNume(const Colaborator& c1, const Colaborator& c2) {
+return c1.nume < c2.nume;
+}
+
+bool comparaSpecialitate(const Colaborator& c1, const Colaborator& c2) {
+return c1.specialitate < c2.specialitate;
+}
+
+bool comparaCategorie(const Colaborator& c1, const Colaborator& c2) {
+return c1.categorie < c2.categorie;
+}
+
+bool comparaSalariu(const Colaborator& c1, const Colaborator& c2) {
+return c1.salariu < c2.salariu;
+}
+
+void afiseazaColaboratori(const vector<Colaborator>& colaboratori) {
+for (const Colaborator& c : colaboratori) {
+cout << "Nume: " << c.nume << ", Specialitate: " << c.specialitate << ", Categorie: " << c.categorie << ", Salariu: " << c.salariu << endl;
+}
+}
+
+int main() {
+vector<Colaborator> colaboratori = citesteColaboratori();
+int optiune;
+
+do {
+cout << "Meniu:" << endl;
+cout << "1. Afiseaza colaboratorii" << endl;
+cout << "2. Modifica datele unui colaborator" << endl;
+cout << "3. Sorteaza colaboratorii dupa nume" << endl;
+cout << "4. Sorteaza colaboratorii dupa specialitate" << endl;
+cout << "5. Sorteaza colaboratorii dupa categorie" << endl;
+cout << "6. Sorteaza colaboratorii dupa salariu" << endl;
+cout << "0. Iesire" << endl;
+cout << "Alege o optiune: ";
+cin >> optiune;
+
+switch (optiune) {
+case 1:
+afiseazaColaboratori(colaboratori);
+break;
+case 2: {
+string nume;
+cout << "Introduceti numele colaboratorului pe care doriti sa-l modificati: ";
+cin >> nume;
+modificaColaborator(colaboratori, nume);
+break;
+}
+case 3:
+sort(colaboratori.begin(), colaboratori.end(), comparaNume);
+cout << "Colaboratorii au fost sortati dupa nume." << endl;
+break;
+case 4:
+sort(colaboratori.begin(), colaboratori.end(), comparaSpecialitate);
+cout << "Colaboratorii au fost sortati dupa specialitate." << endl;
+break;
+case 5:
+sort(colaboratori.begin(), colaboratori.end(), comparaCategorie);
+cout << "Colaboratorii au fost sortati dupa categorie." << endl;
+break;
+case 6:
+sort(colaboratori.begin(), colaboratori.end(), comparaSalariu);
+cout << "Colaboratorii au fost sortati dupa salariu." << endl;
+break;
+case 0:
+cout << "La revedere!" << endl;
+break;
+default:
+cout << "Optiune invalida. Va rugam sa alegeti o optiune valida." << endl;
+break;
+}
+} while (optiune != 0);
+return 0;
+}
+
