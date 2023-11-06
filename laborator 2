@@ -1,0 +1,341 @@
+//puntul a
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+
+class Document {
+private:
+    std::string denumire;
+    std::string tema;
+    std::string autor;
+    int numarPagini;
+    time_t dataUltimeiRedactari;
+
+public:
+    // Constructorul implicit
+    Document() : numarPagini(0), dataUltimeiRedactari(time(0)) {}
+
+    // Constructorul cu parametri
+    Document(const std::string& denumire, const std::string& tema, const std::string& autor, int numarPagini)
+        : denumire(denumire), tema(tema), autor(autor), numarPagini(numarPagini), dataUltimeiRedactari(time(0)) {}
+
+    // Funcție pentru modificarea temei
+    void setTema(const std::string& tema) {
+        this->tema = tema;
+    }
+
+    // Funcție pentru modificarea datei ultimei redactări
+    void setUltimaRedactare() {
+        this->dataUltimeiRedactari = time(0);
+    }
+
+    // Funcție pentru afișarea informațiilor despre document
+    void afisareInfo() {
+        std::cout << "Denumire: " << denumire << std::endl;
+        std::cout << "Tema: " << tema << std::endl;
+        std::cout << "Autor: " << autor << std::endl;
+        std::cout << "Număr de pagini: " << numarPagini << std::endl;
+        std::cout << "Data ultimei redactări: " << ctime(&dataUltimeiRedactari);
+    }
+};
+
+int main() {
+    Document doc;
+    while (true) {
+        std::cout << "\nMeniu:\n";
+        std::cout << "1. Introduceți datele documentului\n";
+        std::cout << "2. Modificați tema\n";
+        std::cout << "3. Modificați data ultimei redactări\n";
+        std::cout << "4. Afișați informațiile documentului\n";
+        std::cout << "5. Ieșiți\n";
+        int optiune;
+        std::cout << "Alegeți o opțiune: ";
+        std::cin >> optiune;
+        switch (optiune) {
+            case 1: {
+                std::string denumire, tema, autor;
+                int numarPagini;
+                std::cin.ignore(); // Pentru a elimina newline-ul rămas în buffer după citirea opțiunii
+                std::cout << "Introduceți denumirea: ";
+                std::getline(std::cin, denumire);
+                std::cout << "Introduceți tema: ";
+                std::getline(std::cin, tema);
+                std::cout << "Introduceți autorul: ";
+                std::getline(std::cin, autor);
+                std::cout << "Introduceți numărul de pagini: ";
+                std::cin >> numarPagini;
+                doc = Document(denumire, tema, autor, numarPagini);
+                doc.setUltimaRedactare();
+                break;
+            }
+            case 2: {
+                std::string tema;
+                std::cin.ignore(); // Pentru a elimina newline-ul rămas în buffer
+                std::cout << "Introduceți noua temă: ";
+                std::getline(std::cin, tema);
+                doc.setTema(tema);
+                doc.setUltimaRedactare();
+                break;
+            }
+            case 3: {
+                doc.setUltimaRedactare();
+                break;
+            }
+            case 4: {
+                std::cout << "\nInformații document:\n";
+                doc.afisareInfo();
+                break;
+            }
+            case 5:
+                return 0;
+            default:
+                std::cout << "Opțiune invalidă. Vă rugăm să alegeți o opțiune validă.\n";
+        }
+    }
+    return 0;
+}
+
+//punctul b
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+class Matrix {
+private:
+    char** data;
+    char rows;
+    char columns;
+    char errorCode;
+public:
+    Matrix();
+    Matrix(char);
+    Matrix(char, char);
+    Matrix(const Matrix&);
+    ~Matrix();
+    void f_set_matr();
+    void f_show();
+    void f_addition(const Matrix& matrix);
+    void f_subtract(const Matrix& matrix);
+    void f_multipl_matrix(const Matrix& matrix);
+    void f_multipl_num(int value);
+    char getElement(char i, char j) const;
+    void setElement(char i, char j, char value);
+    char getErrorCode() const;
+    Matrix& operator=(const Matrix& other);
+};
+Matrix::Matrix() : data(nullptr), rows(0), columns(0), errorCode(0) {}
+Matrix::Matrix(char line, char column) : rows(line), columns(column), errorCode(0) {
+    data = new char*[rows];
+    for (int i = 0; i < rows; i++) {
+        data[i] = new char[columns];
+        for (char j = 0; j < columns; j++) {
+            data[i][j] = 0;
+        }
+    }
+}
+Matrix::Matrix(const Matrix& other) : rows(other.rows), columns(other.columns), errorCode(0) {
+    data = new char*[rows];
+    for (char i = 0; i < rows; i++) {
+        data[i] = new char[columns];
+        for (char j = 0; j < columns; j++) {
+            data[i][j] = other.data[i][j];
+        }
+    }
+}
+Matrix::~Matrix() {
+    for (char i = 0; i < rows; i++) {
+        delete[] data[i];
+    }
+    delete[] data;
+}
+
+char Matrix::getElement(char i, char j) const {
+    if (i >= 0 && i < rows && j >= 0 && j < columns) {
+        return data[i][j];
+    } else {
+        return 0; 
+    }
+}
+
+
+void Matrix::setElement(char i, char j, char value) {
+    if (i >= 0 && i < rows && j >= 0 && j < columns) {
+        data[i][j] = value;
+    } else {
+        errorCode = 1; // Cod de eroare pentru acces invalid
+    }
+}
+
+char Matrix::getErrorCode() const {
+    return errorCode;
+}
+
+void Matrix::f_set_matr() {
+    data = new char*[rows];
+    for (char i = 0; i < rows; i++) {
+        data[i] = new char[columns];
+        for (char j = 0; j < columns; j++) {
+            std::cout << "Matrix[" << i << "][" << j << "] = ";
+            std::cin >> data[i][j];
+        }
+    }
+}
+
+void Matrix::f_show() {
+    for (char i = 0; i < rows; i++) {
+        for (char j = 0; j < columns; j++) {
+            std::cout << "\t" << data[i][j] << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void Matrix::f_addition(const Matrix& matrix) {
+    if (rows == matrix.rows && columns == matrix.columns) {
+        for (char i = 0; i < rows; i++) {
+            for (char j = 0; j < columns; j++) {
+                data[i][j] += matrix.data[i][j];
+            }
+        }
+    } else {
+        errorCode = 2; // Cod de eroare pentru dimensiuni incompatibile
+    }
+}
+
+void Matrix::f_subtract(const Matrix& matrix) {
+    if (rows == matrix.rows && columns == matrix.columns) {
+        for (char i = 0; i < rows; i++) {
+            for (char j = 0; j < columns; j++) {
+                data[i][j] -= matrix.data[i][j];
+            }
+        }
+    } else {
+        errorCode = 2; // Cod de eroare pentru dimensiuni incompatibile
+    }
+}
+
+void Matrix::f_multipl_matrix(const Matrix& matrix) {
+    if (columns == matrix.rows) {
+        char** result = new char*[rows];
+        for (char i = 0; i < rows; i++) {
+            result[i] = new char[matrix.columns];
+            for (char j = 0; j < matrix.columns; j++) {
+                result[i][j] = 0;
+                for (char k = 0; k < columns; k++) {
+                    result[i][j] += data[i][k] * matrix.data[k][j];
+                }
+            }
+        }
+        for (char i = 0; i < rows; i++) {
+            delete[] data[i];
+        }
+        delete[] data;
+        data = result;
+        columns = matrix.columns;
+    } else {
+        errorCode = 2; // Cod de eroare pentru dimensiuni incompatibile
+    }
+}
+
+void Matrix::f_multipl_num(int value) {
+    for (char i = 0; i < rows; i++) {
+        for (char j = 0; j < columns; j++) {
+            data[i][j] *= value;
+        }
+    }
+}
+
+Matrix& Matrix::operator=(const Matrix& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+for (char i = 0; i < rows; i++) {
+        delete[] data[i];
+    }
+    delete[] data;
+
+    rows = other.rows;
+    columns = other.columns;
+    data = new char*[rows];
+    for (char i = 0; i < rows; i++) {
+        data[i] = new char[columns];
+        for (char j = 0; j < columns; j++) {
+            data[i][j] = other.data[i][j];
+        }
+    }
+
+    return *this;
+}
+
+int main() {
+    int rows, columns;
+
+    std::cout << "Introduceti numarul de randuri: ";
+    std::cin >> rows;
+    std::cout << "Introduceti numarul de coloane: ";
+    std::cin >> columns;
+
+    Matrix matrix1(rows, columns);
+    matrix1.f_set_matr();
+
+    std::cout << "Matrix 1:\n";
+    matrix1.f_show();
+
+    std::cout << "Introduceti numarul de randuri pentru Matrix 2: ";
+    std::cin >> rows;
+    std::cout << "Introduceti numarul de coloane pentru Matrix 2: ";
+    std::cin >> columns;
+
+    Matrix matrix2(rows, columns);
+    matrix2.f_set_matr();
+    std::cout << "Matrix 2:\n";
+    matrix2.f_show();
+    Matrix result = matrix1;
+    try {
+        result.f_addition(matrix2);
+        if (result.getErrorCode() == 2) {
+            std::cout << "Adunarea matricelor: Eroare - Dimensiunile sunt incompatibile.\n";
+        } else {
+            std::cout << "Rezultatul adunării matricelor:\n";
+            result.f_show();
+        }
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Adunarea matricelor: " << e.what() << std::endl;
+    }
+
+    result = matrix1;
+    try {
+        result.f_subtract(matrix2);
+        if (result.getErrorCode() == 2) {
+            std::cout << "Scăderea matricelor: Eroare - Dimensiunile sunt incompatibile.\n";
+        } else {
+            std::cout << "Rezultatul scăderii matricelor (Matricea 1 - Matricea 2):\n";
+            result.f_show();
+        }
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Scăderea matricelor: " << e.what() << std::endl;
+    }
+    result = matrix1;
+    try {
+        result.f_multipl_matrix(matrix2);
+        if (result.getErrorCode() == 2) {
+            std::cout << "Înmulțirea matricelor: Eroare - Dimensiunile sunt incompatibile.\n";
+        } else {
+            std::cout << "Rezultatul înmulțirii matricelor:\n";
+            result.f_show();
+        }
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Înmulțirea matricelor: " << e.what() << std::endl;
+    }
+    char scalar;
+    std::cout << "Introduceți o valoare scalară pentru înmulțire: ";
+    std::cin >> scalar;
+    result = matrix1;
+    result.f_multipl_num(scalar);
+    std::cout << "Matricea 1 înmulțită cu " << scalar << ":\n";
+    result.f_show();
+    return 0;
+}
+
