@@ -1,3 +1,4 @@
+//punctul b
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
