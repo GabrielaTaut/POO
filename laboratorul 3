@@ -1,0 +1,268 @@
+//punctul a
+#include <iostream>
+class RealNumber {
+private:
+    double value;
+public:
+    // Constructor
+    RealNumber(double val) : value(val) {}
+    // Getter pentru valoarea numărului real
+    double getValue() const {
+        return value;
+    }
+
+    // Supraincarcarea operatorului ++ (postincrement)
+    RealNumber operator++(int) {
+        RealNumber temp = *this;
+        value++;
+        return temp;
+    }
+
+    // Supraincarcarea operatorului ++ (preincrement)
+    RealNumber& operator++() {
+        value++;
+        return *this;
+    }
+
+    // Supraincarcarea operatorului + pentru adunare cu un număr real
+    RealNumber operator+(const RealNumber& other) const {
+        return RealNumber(value + other.value);
+    }
+
+    // Supraincarcarea operatorului + pentru adunare cu un număr double
+    RealNumber operator+(const double& other) const {
+        return RealNumber(value + other);
+    }
+
+    // Funcție prietenă pentru supraincarcarea operatorului -- (postdecrement)
+    friend RealNumber operator--(RealNumber& num, int) {
+        RealNumber temp = num;
+        num.value--;
+        return temp;
+    }
+
+    // Funcție prietenă pentru supraincarcarea operatorului -- (predecrement)
+    friend RealNumber& operator--(RealNumber& num) {
+        num.value--;
+        return num;
+    }
+
+    // Funcție prietenă pentru supraincarcarea operatorului - pentru scădere cu un număr real
+    friend RealNumber operator-(const RealNumber& num1, const RealNumber& num2) {
+        return RealNumber(num1.value - num2.value);
+    }
+
+    // Funcție prietenă pentru supraincarcarea operatorului - pentru scădere cu un număr double
+    friend RealNumber operator-(const RealNumber& num, const double& other) {
+        return RealNumber(num.value - other);
+    }
+
+    // Supraincarcarea operatorului << pentru afișarea valorii
+    friend std::ostream& operator<<(std::ostream& out, const RealNumber& num) {
+        out << num.value;
+        return out;
+    }
+};
+
+int main() {
+    RealNumber num1(5.0);
+    RealNumber num2(2.0);
+
+    std::cout << "Initial values: num1 = " << num1 << ", num2 = " << num2 << std::endl;
+
+    // Utilizare operator ++
+    num1++;
+    std::cout << "After postincrement: num1 = " << num1 << std::endl;
+
+    ++num2;
+    std::cout << "After preincrement: num2 = " << num2 << std::endl;
+
+    // Utilizare operator +
+    RealNumber sum1 = num1 + num2;
+    std::cout << "Sum of num1 and num2: " << sum1 << std::endl;
+
+    RealNumber sum2 = num1 + 3.0;
+    std::cout << "Sum of num1 and 3.0: " << sum2 << std::endl;
+
+    // Utilizare operator --
+    num1--;
+    std::cout << "After postdecrement: num1 = " << num1 << std::endl;
+
+    --num2;
+    std::cout << "After predecrement: num2 = " << num2 << std::endl;
+
+    // Utilizare operator -
+    RealNumber diff1 = num1 - num2;
+    std::cout << "Difference of num1 and num2: " << diff1 << std::endl;
+
+    RealNumber diff2 = num1 - 2.0;
+    std::cout << "Difference of num1 and 2.0: " << diff2 << std::endl;
+
+    return 0;
+}
+
+//puntul b
+#include <iostream>
+class Vector {
+private:
+    int size;
+    double* elements;
+
+public:
+    // Constructori
+    Vector() : size(0), elements(nullptr) {}
+    Vector(int size) : size(size), elements(new double[size]) {}
+    Vector(const Vector& other);  // Constructor de copiere
+    ~Vector();  // Destructor
+
+    // Operatorul de atribuire
+    Vector& operator=(const Vector& other);
+
+    // Operatorul de adunare
+    Vector operator+(const Vector& other) const;
+
+    // Operatorul de scădere
+    Vector operator-(const Vector& other) const;
+    // Operatorii de comparație
+    friend bool operator==(const Vector& v1, const Vector& v2);
+    friend bool operator!=(const Vector& v1, const Vector& v2);
+    friend bool operator<(const Vector& v1, const Vector& v2);
+    friend bool operator>(const Vector& v1, const Vector& v2);
+    // Funcția de calcul a modulului elementelor vectorului
+    double calculateModulus() const;
+
+    // Operatorul de ieșire
+    friend std::ostream& operator<<(std::ostream& os, const Vector& v);
+    // Operatorul de intrare
+    friend std::istream& operator>>(std::istream& is, Vector& v);
+};
+// Implementarea constructorului de copiere
+Vector::Vector(const Vector& other) : size(other.size), elements(new double[size]) {
+    for (int i = 0; i < size; ++i) {
+        elements[i] = other.elements[i];
+    }
+}
+
+// Implementarea destructorului
+Vector::~Vector() {
+    delete[] elements;
+}
+
+// Implementarea operatorului de atribuire
+Vector& Vector::operator=(const Vector& other) {
+    if (this != &other) {  // Verificare autoatribuire
+        delete[] elements;  // Eliberare resursele existente
+        size = other.size;
+        elements = new double[size];
+        for (int i = 0; i < size; ++i) {
+            elements[i] = other.elements[i];
+        }
+    }
+    return *this;
+}
+
+// Implementarea operatorului de adunare
+Vector Vector::operator+(const Vector& other) const {
+    Vector result(size);
+    for (int i = 0; i < size; ++i) {
+        result.elements[i] = elements[i] + other.elements[i];
+    }
+    return result;
+}
+
+// Implementarea operatorului de scădere
+Vector Vector::operator-(const Vector& other) const {
+    Vector result(size);
+    for (int i = 0; i < size; ++i) {
+        result.elements[i] = elements[i] - other.elements[i];
+    }
+    return result;
+}
+
+// Implementarea operatorului de comparație ==
+bool operator==(const Vector& v1, const Vector& v2) {
+    return (v1.size == v2.size) && (std::equal(v1.elements, v1.elements + v1.size, v2.elements));
+}
+
+// Implementarea operatorului de comparație !=
+bool operator!=(const Vector& v1, const Vector& v2) {
+    return !(v1 == v2);
+}
+
+// Implementarea funcției de calcul a modulului elementelor vectorului
+double Vector::calculateModulus() const {
+    double modulus = 0.0;
+    for (int i = 0; i < size; ++i) {
+        modulus += std::abs(elements[i]);
+    }
+    return modulus;
+}
+
+// Implementarea operatorului <
+bool operator<(const Vector& v1, const Vector& v2) {
+    return v1.calculateModulus() < v2.calculateModulus();
+}
+
+// Implementarea operatorului >
+bool operator>(const Vector& v1, const Vector& v2) {
+    return v1.calculateModulus() > v2.calculateModulus();
+}
+
+// Implementarea operatorului de ieșire
+std::ostream& operator<<(std::ostream& os, const Vector& v) {
+    os << "[ ";
+    for (int i = 0; i < v.size; ++i) {
+        os << v.elements[i] << " ";
+    }
+    os << "]";
+    return os;
+}
+
+// Implementarea operatorului de intrare
+std::istream& operator>>(std::istream& is, Vector& v) {
+    std::cout << "Introduceti dimensiunea vectorului: ";
+    is >> v.size;
+
+    delete[] v.elements;  // Eliberare resursele existente
+    v.elements = new double[v.size];
+
+    std::cout << "Introduceti elementele vectorului:\n";
+    for (int i = 0; i < v.size; ++i) {
+        std::cout << "Elementul " << i + 1 << ": ";
+        is >> v.elements[i];
+    }
+
+    return is;
+}
+
+int main() {
+    Vector v1, v2;
+    std::cout << "Introduceti primul vector:\n";
+    std::cin >> v1;
+    std::cout << "Introduceti al doilea vector:\n";
+    std::cin >> v2;
+    std::cout << "v1 + v2 = " << v1 + v2 << std::endl;
+    std::cout << "v1 - v2 = " << v1 - v2 << std::endl;
+    if (v1 == v2) {
+        std::cout << "Cele doua vectori sunt egali.\n";
+    } else {
+        std::cout << "Cele doua vectori nu sunt egali.\n";
+    }
+    if (v1 != v2) {
+        std::cout << "Cele doua vectori nu sunt egali.\n";
+    } else {
+        std::cout << "Cele doua vectori sunt egali.\n";
+    }
+    if (v1 < v2) {
+        std::cout << "Modulul lui v1 este mai mic decat modulul lui v2.\n";
+    } else {
+        std::cout << "Modulul lui v1 nu este mai mic decat modulul lui v2.\n";
+    }
+    if (v1 > v2) {
+        std::cout << "Modulul lui v1 este mai mare decat modulul lui v2.\n";
+    } else {
+        std::cout << "Modulul lui v1 nu este mai mare decat modulul lui v2.\n";
+    }
+    return 0;
+}
+
