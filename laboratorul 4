@@ -1,0 +1,211 @@
+//punctul a
+#include <iostream>
+#include <cstring>
+class Lichid {
+private:
+    char* denumire;
+    double densitate;
+
+public:
+    // Constructorul implicit
+    Lichid() : denumire(nullptr), densitate(0.0) {}
+
+    // Constructorul cu parametri
+    Lichid(const char* nume, double dens) : densitate(dens) {
+        denumire = new char[strlen(nume) + 1];
+        strcpy(denumire, nume);
+    }
+
+    // Destructorul
+    ~Lichid() {
+        delete[] denumire;
+    }
+
+    // Operatorul de flux de intrare
+    friend std::istream& operator>>(std::istream& in, Lichid& l) {
+        char buffer[100];
+        std::cout << "Introduceti denumirea lichidului: ";
+        in >> buffer;
+
+        // Eliberăm memoria alocată anterior pentru denumire
+        delete[] l.denumire;
+
+        l.denumire = new char[strlen(buffer) + 1];
+        strcpy(l.denumire, buffer);
+
+        std::cout << "Introduceti densitatea lichidului: ";
+        in >> l.densitate;
+
+        return in;
+    }
+
+    // Funcție de acces pentru denumire
+    const char* getDenumire() const {
+        return denumire;
+    }
+
+    // Funcție de acces pentru densitate
+    double getDensitate() const {
+        return densitate;
+    }
+
+    // Funcție pentru redenumirea densității
+    void redenumesteDensitate(double nouaDensitate) {
+        densitate = nouaDensitate;
+    }
+};
+
+class BauturiAlcoolice : public Lichid {
+private:
+    double tarie;
+
+public:
+    // Constructorul implicit
+    BauturiAlcoolice() : tarie(0.0) {}
+
+    // Constructorul cu parametri pentru clasa derivată
+    BauturiAlcoolice(const char* nume, double dens, double t) : Lichid(nume, dens), tarie(t) {}
+
+    // Funcție de acces pentru tărie
+    double getTarie() const {
+        return tarie;
+    }
+
+    // Funcție pentru redenumirea tăriei
+    void redenumesteTarie(double nouaTarie) {
+        tarie = nouaTarie;
+    }
+
+    // Suprascrierea funcției pentru redenumirea densității din clasa de bază
+    void redenumesteDensitate(double nouaDensitate) {
+        Lichid::redenumesteDensitate(nouaDensitate + 1); // Exemplu de modificare a densității în clasa derivată
+    }
+
+    // Operatorul de flux de intrare pentru clasa derivată
+    friend std::istream& operator>>(std::istream& in, BauturiAlcoolice& ba) {
+        // Apelăm operatorul de flux de intrare al clasei de bază
+        in >> static_cast<Lichid&>(ba);
+
+        std::cout << "Introduceti taria bauturii alcoolice: ";
+        in >> ba.tarie;
+
+        return in;
+    }
+};
+
+int main() {
+    BauturiAlcoolice ba;
+
+    std::cout << "Introduceti informatiile despre bautura alcoolica:\n";
+    std::cin >> ba;
+
+    std::cout << "\nInformatiile despre bautura alcoolica:\n";
+    std::cout << "Denumire: " << ba.getDenumire() << "\nDensitate: " << ba.getDensitate() << "\nTarie: " << ba.getTarie() << "\n";
+
+    ba.redenumesteDensitate(0.9);
+    ba.redenumesteTarie(50.0);
+
+    std::cout << "\nInformatiile actualizate despre bautura alcoolica:\n";
+    std::cout << "Denumire: " << ba.getDenumire() << "\nDensitate: " << ba.getDensitate() << "\nTarie: " << ba.getTarie() << "\n";
+
+    return 0;
+}
+
+//punctul b
+#include <iostream>
+#include <string>
+
+class Buton {
+private:
+    std::string text;
+
+public:
+    // Constructorul pentru clasa Buton
+    Buton(const std::string& buttonText) : text(buttonText) {}
+
+    // Metoda de acces pentru text
+    std::string getText() const {
+        return text;
+    }
+};
+
+class Fereastra {
+private:
+    Buton buton;
+    int coordonataX;
+    int coordonataY;
+
+public:
+    // Constructorul pentru clasa Fereastra
+    Fereastra(const Buton& btn, int x, int y) : buton(btn), coordonataX(x), coordonataY(y) {}
+
+    // Metode de acces pentru membrii privați
+    int getCoordonataX() const {
+        return coordonataX;
+    }
+
+    int getCoordonataY() const {
+        return coordonataY;
+    }
+
+    Buton getButon() const {
+        return buton;
+    }
+
+    // Destructorul
+    ~Fereastra() {
+        std::cout << "Destructorul pentru Fereastra\n";
+    }
+};
+
+class FereastraCuButonSiMesaj : public Fereastra {
+private:
+    std::string mesaj;
+
+public:
+    // Constructorul pentru clasa derivată FereastraCuButonSiMesaj
+    FereastraCuButonSiMesaj(const Buton& btn, int x, int y, const std::string& message)
+        : Fereastra(btn, x, y), mesaj(message) {}
+
+    // Destructorul pentru clasa derivată
+    ~FereastraCuButonSiMesaj() {
+        std::cout << "Destructorul pentru FereastraCuButonSiMesaj\n";
+    }
+
+    // Operatorul de flux de ieșire
+    friend std::ostream& operator<<(std::ostream& os, const FereastraCuButonSiMesaj& f) {
+        os << "Coordonate: (" << f.getCoordonataX() << ", " << f.getCoordonataY() << ")\n";
+        os << "Text buton: " << f.getButon().getText() << "\n";
+        os << "Mesaj: " << f.mesaj << "\n";
+        return os;
+    }
+};
+
+int main() {
+// Citirea textului butonului de la tastatură
+    std::string textButon;
+    std::cout << "Introduceti textul butonului: ";
+    std::getline(std::cin, textButon);
+
+    // Citirea coordonatelor ferestrei de la tastatură
+    int coordonataX, coordonataY;
+    std::cout << "Introduceti coordonata X a ferestrei: ";
+    std::cin >> coordonataX;
+    std::cout << "Introduceti coordonata Y a ferestrei: ";
+    std::cin >> coordonataY;
+
+    // Crearea obiectelor
+    Buton butonPrincipal(textButon);
+    Fereastra fereastraPrincipala(butonPrincipal, coordonataX, coordonataY);
+
+    // Citirea mesajului de la tastatură pentru fereastra specială
+    std::string mesajSpecial;
+    std::cout << "Introduceti mesajul pentru fereastra speciala: ";
+    std::getline(std::cin >> std::ws, mesajSpecial); // Ignorarea whitespaces
+    // Crearea obiectului pentru fereastra specială
+    FereastraCuButonSiMesaj fereastraSpeciala(butonPrincipal, coordonataX, coordonataY, mesajSpecial);
+
+    // Afisare informatii despre fereastra speciala
+    std::cout << fereastraSpeciala;
+    return 0;
+}
