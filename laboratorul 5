@@ -1,0 +1,100 @@
+//punctul a
+#include <iostream>
+// Clasa de baza pentru Barca cu Motor
+class BarcaCuMotor {
+public:
+    void pornesteMotor() {
+        std::cout << "Motorul barcii cu motor a fost pornit.\n";
+    }
+};
+// Clasa de baza pentru Motocicleta
+class Motocicleta {
+public:
+    void pornesteMotocicleta() {
+        std::cout << "Motocicleta a fost pornita.\n";
+    }
+};
+// Clasa derivata MotocicletaDeApa care mosteneste din ambele clase de baza
+class MotocicletaDeApa : public BarcaCuMotor, public Motocicleta {
+public:
+    void navigheaza() {
+        std::cout << "Motocicleta de apa navigheaza pe apa.\n";
+    }
+};
+
+int main() {
+    // Cream o instanta a clasei derivate MotocicletaDeApa
+    MotocicletaDeApa motocicletaDeApa;
+
+    // Apelam metodele din clasele de baza
+    motocicletaDeApa.pornesteMotor();       // Moștenit de la BarcaCuMotor
+    motocicletaDeApa.pornesteMotocicleta(); // Moștenit de la Motocicleta
+    motocicletaDeApa.navigheaza();          // Moștenit de la MotocicletaDeApa
+    return 0;
+}
+
+//punctul b
+#include <iostream>
+#include <string>
+// Clasa de baza
+class Transport {
+public:
+    Transport(const std::string& nume) : numeTransport(nume) {}
+
+    void afisareNume() const {
+        std::cout << "Transport: " << numeTransport << std::endl;
+    }
+
+    virtual void deplasare() const {
+        std::cout << "Se deplaseaza" << std::endl;
+    }
+
+private:
+    std::string numeTransport;
+};
+
+// Clasa derivata BarcaCuMotor din clasa Transport
+class BarcaCuMotor : public Transport {
+public:
+    BarcaCuMotor(const std::string& nume) : Transport(nume) {}
+
+    void pornireMotor() const {
+        std::cout << "Motorul barcii cu motor este pornit" << std::endl;
+    }
+
+    // Supradefinirea functiei virtuale din clasa de baza
+    void deplasare() const override {
+        std::cout << "Barca cu motor se deplaseaza pe apa" << std::endl;
+    }
+};
+
+// Clasa derivata MotocicletaDeApa din clasa Motocicleta
+class MotocicletaDeApa : public BarcaCuMotor {
+public:
+    MotocicletaDeApa(const std::string& nume) : BarcaCuMotor(nume) {}
+
+    // Supradefinirea functiei virtuale din clasa de baza
+    void deplasare() const override {
+        std::cout << "Motocicleta de apa se deplaseaza pe apa" << std::endl;
+    }
+};
+
+int main() {
+    // Exemplu de utilizare
+    Transport transport("Generic");
+    BarcaCuMotor barca("Barca cu Motor");
+    MotocicletaDeApa motocicleta("Motocicleta de Apa");
+
+    transport.afisareNume();
+    transport.deplasare();
+
+    barca.afisareNume();
+    barca.deplasare();
+    barca.pornireMotor();
+
+    motocicleta.afisareNume();
+    motocicleta.deplasare();
+    motocicleta.pornireMotor();
+
+    return 0;
+};
