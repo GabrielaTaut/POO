@@ -1,0 +1,127 @@
+//pinctul a
+#include <iostream>
+#include <vector>
+#include <algorithm>
+template <typename T>
+T gaseste_al_doilea_element(const std::vector<T>& lista) {
+    if (lista.size() < 2) {
+        std::cerr << "Lista nu are suficiente elemente.\n";
+        // Puteți arunca o excepție sau trata altfel situația în care lista are mai puțin de 2 elemente.
+        // În acest exemplu, afișăm un mesaj de eroare și returnăm un element "sentinel".
+        return T(); // T() va returna o valoare implicită pentru tipul T
+    }
+    // Clonăm lista pentru a nu o modifica
+    std::vector<T> lista_sortata = lista;
+    std::sort(lista_sortata.begin(), lista_sortata.end(), std::greater<T>());
+
+    // Găsim al doilea element ca mărime
+    T al_doilea_element = lista_sortata[1];
+    return al_doilea_element;
+}
+int main() {
+    // Exemplu de utilizare
+    std::vector<int> lista_exemplu = {0, 2, 3, 4, 3, 6};
+    int rezultat = gaseste_al_doilea_element(lista_exemplu);
+    std::cout << "Al doilea element ca marime: " << rezultat << std::endl;
+    return 0;
+}
+ 
+// b) Creaţi clasa parametrizată Set - mulţimea. Clasa trebuie să conţină constructorii, destructorii şi
+funcţiile add, in, remove, operatorii “+”, “*”,“-” şi operatorii de intrare/ieşire.
+Codul programului:
+#include <iostream>
+#include <set>
+
+template <typename T>
+class Set {
+private:
+    std::set<T> elements;
+
+public:
+    // Constructor
+    Set() {}
+
+    // Constructor cu o listă de inițializare
+    Set(std::initializer_list<T> init_list) : elements(init_list) {}
+
+    // Destructor
+    ~Set() {}
+
+    // Adaugă un element în mulțime
+    void add(const T& element) {
+        elements.insert(element);
+    }
+
+    // Verifică dacă un element este în mulțime
+    bool in(const T& element) const {
+        return elements.find(element) != elements.end();
+    }
+
+    // Elimină un element din mulțime
+    void remove(const T& element) {
+        elements.erase(element);
+    }
+
+    // Operator de uniune (+)
+    Set<T> operator+(const Set<T>& other) const {
+        Set<T> result = *this;
+        for (const auto& elem : other.elements) {
+            result.add(elem);
+        }
+        return result;
+    }
+
+    // Operator de intersecție (*)
+    Set<T> operator*(const Set<T>& other) const {
+        Set<T> result;
+        for (const auto& elem : elements) {
+            if (other.in(elem)) {
+                result.add(elem);
+            }
+        }
+        return result;
+    }
+
+    // Operator de diferență (-)
+    Set<T> operator-(const Set<T>& other) const {
+        Set<T> result = *this;
+        for (const auto& elem : other.elements) {
+            result.remove(elem);
+        }
+        return result;
+    }
+
+    // Operator de intrare (>>)
+    friend std::istream& operator>>(std::istream& input, Set<T>& set) {
+        T element;
+        while (input >> element) {
+            set.add(element);
+        }
+        return input;
+    }
+
+    // Operator de ieșire (<<)
+    friend std::ostream& operator<<(std::ostream& output, const Set<T>& set) {
+        output << "{ ";
+        for (const auto& elem : set.elements) {
+            output << elem << " ";
+        }
+        output << "}";
+        return output;
+    }
+};
+
+int main() {
+    // Exemplu de utilizare
+    Set<int> set1 = {1, 2, 3};
+    Set<int> set2 = {3, 4, 5};
+    std::cout << "Set1: " << set1 << std::endl;
+    std::cout << "Set2: " << set2 << std::endl;
+    Set<int> unionSet = set1 + set2;
+    Set<int> intersectionSet = set1 * set2;
+    Set<int> differenceSet = set1 - set2;
+    std::cout << "Union: " << unionSet << std::endl;
+    std::cout << "Intersection: " << intersectionSet << std::endl;
+    std::cout << "Difference: " << differenceSet << std::endl;
+    return 0;
+}
